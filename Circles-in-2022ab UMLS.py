@@ -11,7 +11,7 @@ cnx = mysql.connector.connect(host='172.16.34.1',
 cursor = cnx.cursor()
 
 # Get the CUI relationships from the UMLS database
-query = 'SELECT CUI1, CUI2, RELA FROM MRREL limit 5000'
+query = 'SELECT CUI1, CUI2, RELA FROM MRREL limit 6000'
 cursor.execute(query)
 
 # Build the graph of CUIs and their relationships
@@ -40,7 +40,7 @@ for node in G:
     path = []
     if find_cycles(node, G, visited, path):
         path.append(path[0]) # add the first term to the end of the path
-        if len(path)>3:
+        if len(path)>3 and len(path)<40:
             print(path)
 
 # Close the cursor and connection to the database
