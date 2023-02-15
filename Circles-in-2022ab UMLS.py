@@ -11,7 +11,7 @@ cnx = mysql.connector.connect(host='172.16.34.1',
 cursor = cnx.cursor()
 
 # Get the CUI relationships from the UMLS database
-query = 'SELECT CUI1, CUI2, RELA FROM MRREL limit 6000'
+query = 'SELECT CUI1, CUI2, RELA FROM MRREL'
 cursor.execute(query)
 
 # Build the graph of CUIs and their relationships
