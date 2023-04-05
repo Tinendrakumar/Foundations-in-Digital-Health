@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <head>
+  <title>MIMIC-III </title>
+
+</head>
+<body>
+  <div>
+  <h1>MIMIC-III</h1>
+  <form id="search-form">
+    <div>
+      <label for="query">Enter Query :
+      <input type="text" id="query" name="query" placeholder="Enter query">  (EX: Car Crash)
+    </div>
+    <div>
+          <label for="start_date">Chart start date:
+        <input type="text" id="start_date" name="start_date" pattern="\d{4}-\d{2}-\d{2}">  (Ex:2012-12-31)
+        <label for="end_date">Chart end date:
+         <input type="text" id="end_date" name="end_date" pattern="\d{4}-\d{2}-\d{2}" > (Ex:2012-12-31)
+</div>
+<div>
+
+</div>
+    
+    <div>
+      <label for="icd9_codes">Enter Icd9 codes:
+      <input type="text" id="icd9_codes" name="icd9_codes" placeholder="Enter icd9 codes"> EX:1629,1721
+    </div>
+    
+    <div>
+      <label for="hospital_expire_flag_input">Hospital Expire Flag:
+      <select id="hospital_expire_flag" name="hospital_expire_flag"> 
+        <option value="Both">No Selection</option>
+        <option value="Died">Not survived (Flag=1)</option> 
+        <option value="Survived">Survived (Flag=0)</option> 
+
+      </select>
+    </div>
+    <div>
+        <p>
+        </br></p>
+    </div>
+    <div>
+      <input type="submit" value="Click here to get the result">
+    </div>
+  </form>
+
+  </form>
+  <div id="result">
+  </div>
+</div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(function() { // Shorthand for $(document).ready()
+      $('#search-form').submit(function(event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+        var query = $('#query').val();
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+        var icd9_codes = $('#icd9_codes').val();
+        var hospital_expire_flag = $('#hospital_expire_flag').val();
+        $.ajax({
+          url: '/Search',
+          method: 'POST',
+          data: {query: query, hospital_expire_flag: hospital_expire_flag, start_date:start_date, end_date:end_date,icd9_codes:icd9_codes},
+          success: function(result) {
+            var html = '<table>';
+            
+            html += '<thead><tr><th>ID</th><th>Hadm ID</th><th>Chart Date</th><th>Text</th><th>Hospital Expire Flag</th><th>ICD Codes</th></tr></thead>';
+            html += '<tbody>';
+            $.each(result, function(i, item) {
+              html += '<tr><td>' + item.id + '</td><td>' + item.hadm_id  + '</td><td>' + item.chart_date + '</td><td>' + item.note_text + '</td><td>' + item.hospital_expire_flag + '</td><td>' + item.icd9_codes + '</td></tr>';
+            });
+            html += '</tbody>';
+            html += '</br>Results:'+result[0].Num_results+'<br><br>' + 'Admission IDS:'+result[0].id_list +'<br><br>'+'Synonyms: ' + result[0].synonyms + '</br>';
+            html += '</table>';
+            $('#result').html(html);
+          }
+        });
+      });
+    });
+    </script>
+
+<style>
+  .container {
+display:flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 2em;
+box-sizing: border-box;
+}
+
+table {
+  border-collapse: separate;
+  margin: 2em 0;
+  font-size: 0.9em;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+thead {
+  background-color: #4c4c4c;
+  color: #ffffff;
+  text-align: center;
+}
+
+th, td {
+  padding: 12px 15px;
+}
+
+tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+tbody tr:last-of-type {
+  border-bottom: 2px solid #009879;
+}
+
+caption {
+  caption-side: top;
+  margin-top: 30px;
+  font-weight: bold;
+  color: blue;
+}
+
+form label {
+  display: block;
+  margin-top: 1em;
+}
+
+form input[type="text"] {
+  padding: 0.4em;
+  border-radius: 112px;
+  border: 1px round #ddd;
+  font-size: 1em;
+  margin-bottom: 1em;
+  width: 250px;
+}
+
+form input[type="text"]:invalid {
+  border-color: red;
+}
+
+form input[type="text"]:valid {
+  border-color: green;
+}
